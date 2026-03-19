@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DailyFocus - Your Daily Productivity Companion</title>
+     <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+    <style>
+    * { font-family: 'Plus Jakarta Sans', sans-serif; }
+ 
+    /* Gradient accent for cards */
+    .card-glow-green { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); }
+    .card-glow-yellow { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); }
+    .card-glow-orange { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); }
+    .card-glow-blue { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); }
+ 
+    /* Mini bar chart */
+    .mini-bars { display: flex; align-items: flex-end; gap: 3px; height: 40px; }
+    .mini-bars span { width: 6px; border-radius: 3px; display: block; }
+ 
+    /* Toggle switch */
+    .toggle-checkbox:checked { right: 0; border-color: #10b981; }
+    .toggle-checkbox:checked + .toggle-label { background-color: #10b981; }
+    .toggle-checkbox { right: 1rem; transition: all 0.3s; }
+ 
+    /* Timer input number hide arrows */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+ 
+    /* Smooth badge pulse */
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .running-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+ 
+    /* Section fade in */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.5s ease both; }
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.16s; }
+    .delay-3 { animation-delay: 0.24s; }
+    .delay-4 { animation-delay: 0.32s; }
+ 
+    /* CTA button shimmer */
+    .btn-shimmer { position: relative; overflow: hidden; }
+    .btn-shimmer::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+      animation: shimmer 2.4s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0% { left: -100%; } 60%, 100% { left: 150%; } }
+ 
+    /* Completed task card */
+    .completed-card { border-left: 3px solid #10b981; }
+ 
+    /* Scrollbar hide for body overflow */
+    body { scroll-behavior: smooth; }
+  </style>
+
+</head>
+
+
+<body class="bg=gray-50 min-h-screen">
+
+    <!-- HEADER SECTION -->
+     <header class="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="fade-up">
+                <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight">
+                    Daily<span class="text-emerald-500">
+                        Focus</span>
+                </h1>
+                <p class="text-slate-700 text-sm mt-1">
+                    Your daily <span class="text-emerald-500">
+                        productivity</span> companion
+                </p>
+            </div>
+            <a href="#add-task" class="btn-shimmer fade-up delay-1 bg-emerald-500 hover:bg-emerald-800 text-white text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md shadow-emerald-200 transition-all duration-200 hover:shadow-lg hover:scale-105">
+               Start Planning <span>
+                +
+            </span>
+            </a>
+        </div>
+     </header>
+    <main class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+        <!-- Summary Cards -->
+        <section class="fade-up delay-1">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+
+                <!-- Total Tasks -->
+                 <div class="card-glow-green rounded-2xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        </div>
+                        <div class="mini-bars">
+            <span style="height: 55%;background:#6ee7b7 ;"></span>
+            <span style="height:70%; background:#6ee7b7;"></span>
+            <span style="height:45%; background:#6ee7b7;"></span>
+            <span style="height:90%; background:#10b981;"></span>
+            <span style="height:65%; background:#6ee7b7;"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-extrabold text-slate-800" id="total-count">00</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-0.5">Total Tasks</p>
+                    </div>
+                 </div>
+
+                 <!-- Pending tasks -->
+                  <div class="card-glow-yellow rounded-2xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-start justify-between">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center text-shadow-yellow-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="mini-bars">
+              <span style="height:60%; background:#fde68a;"></span>
+              <span style="height:40%; background:#fbbf24;"></span>
+              <span style="height:75%; background:#fde68a;"></span>
+              <span style="height:50%; background:#fbbf24;"></span>
+              <span style="height:85%; background:#f59e0b;"></span>
+            </div>
+            </div>
+            <div>
+                <p class="text-3xl font-extrabold text-slate-800" id="pending-count">00</p>
+                <p class="text-xs font-semibold text-slate-500 mt-0.5">Pending Tasks</p>
+            </div>
+            </div>
+ <!-- In Progress -->
+        <div class="card-glow-orange rounded-2xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-start justify-between">
+            <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
+            <div class="mini-bars">
+              <span style="height:50%; background:#fed7aa;"></span>
+              <span style="height:80%; background:#fb923c;"></span>
+              <span style="height:40%; background:#fed7aa;"></span>
+              <span style="height:65%; background:#f97316;"></span>
+              <span style="height:55%; background:#fed7aa;"></span>
+            </div>
+          </div>
+          <div>
+            <p class="text-3xl font-extrabold text-slate-800" id="inprogress-count">0</p>
+            <p class="text-xs font-semibold text-slate-500 mt-0.5">In Progress</p>
+          </div>
+        </div>
+ 
+        <!-- Completed -->
+        <div class="card-glow-blue rounded-2xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <div class="flex items-start justify-between">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-500">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div class="mini-bars">
+              <span style="height:45%; background:#bfdbfe;"></span>
+              <span style="height:70%; background:#93c5fd;"></span>
+              <span style="height:55%; background:#bfdbfe;"></span>
+              <span style="height:90%; background:#3b82f6;"></span>
+              <span style="height:65%; background:#93c5fd;"></span>
+            </div>
+          </div>
+          <div>
+            <p class="text-3xl font-extrabold text-slate-800" id="completed-count">0</p>
+            <p class="text-xs font-semibold text-slate-500 mt-0.5">Completed Tasks</p>
+          </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add New Task Form -->
+
+<section id="add-task" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 fade-up delay-2">
+    <div class="flex items-center gap-2 mb-5">
+        <div class="w-7 h-7 bg-emerald-100  rounded-lg flex items-center justify-center text-emerald-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        </div>
+        <h2 class="text-base font-bold text-slate-700">Create New Task</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 ">
+        <!-- Tasks -->
+         <div class="md:col-span-2">
+            <label class="block text-xs font-semibold btext-slate-500 mb-1.5">Task name</label>
+            <input id="task-name" type="text" placeholder="Enter New task name"
+            class="m-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-,slate-700 bg-gray-50 focus-within:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent placeholder-gray-300 transition"/>
+         </div>
+         <!-- Category -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 mb-1.5">Category</label>
+            <div class="relative">
+                <select id="task-category"
+                class="w-full appearance-none border border-gray-200 rounded-xl px-4 py-3 text-sm text-slate-600 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition pr-9">
+                <option value="">Select a category</option>
+                <option value="work">Work</option>
+                <option value="personal">Personal</option>
+                <option value="health">Health</option>
+                <option value="study">Study</option>
+                <option value="other">Other</option>
+                </select>
+                <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+          </div>
+
+          <!-- Priority -->
+             <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1.5">Priority</label>
+          <div class="relative">
+            <select id="task-priority"
+              class="w-full appearance-none border border-gray-200 rounded-xl px-4 py-3 text-sm text-slate-600 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition pr-9">
+              <option value="" disabled selected>Select Priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+            <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timer Toggle -->
+         <div class="md:col-span-2 bg-gray-50 rounded-xl px-5 py-4 border border-gray-100">
+            <div class="flex flex-wrap items-center gap-6">
+
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-semibold text-slate-600">Set Timer</span>
+                    <div class="relative w-11 h-6 font-semibold shrink-0">
+                        <input type="checkbox" id="timer-toggle" class="sr-only"/>
+                        <label for="timer-toggle" class="block w-11 h-6 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300" id="toggle-track">
+                        </label>
+                        <span id="toggle-knob" class="pointer-events-none absolute left-1 top-1 w-4 h-4 rounded-full shadow transition-transform duration-300 bg-white"></span>
+                    </div>
+                </div>
+
+                <!-- Time-Inputs(when toggle on) -->
+                 <div id="timer-inputs" class="flex items-center gap-4"style="display: none;">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Hours</span>
+                        <input type="number" id="timer-hours" min="0" max="23" value="0"
+                        class="w-16 border border-gray-200 rounded-lg px-2 py-2 text-sm text-center font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"/>
+                    </div>
+                    <span class="text-slate-300 font-bold">:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Minutes</span>
+                        <input type="number" id="timer-mins" min="0" max="59" value="0" class="w-16 border border-gray-200 rounded-lg px-2 py-2 text-sm text-center font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"/>
+                    </div>
+                    <span class="text-slate-300 font-bold">:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Seconds</span>
+                        <input type="number" id="timer-secs" min="0" max="59" value="0" class="w-16 border border-gray-200 rounded-lg px-2 py-2 text-sm text-center font-bold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"/>
+                    </div>
+                 </div>
+            </div>
+         </div>
+        
+        <!-- Add task button -->
+         <div class="md:col-span-2">
+            <button onclick="addTask()" class="btn-shimmer w-full bg-emerald-500 hover:bg-emerald-700c active:scale-95 text-white font-bold py-3.5 rounded-xl text-sm shadow-md shadow-emerald-200 transition-all duration-200 hover:shadow-lg">
+                + Add Task
+            </button>
+         </div>
+    </div>
+</section>
+
+ <!-- TODAY'S TASKS -->
+  <section class="fade-up delay-3">
+    <h2 class="text-base font-bold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+        Today's Tasks
+    </h2>
+    <div id="tasks-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <p class="text-sm text-slate-400 col-span-2 text-center py-8" id="no-task-msg">No Tasks Added Yet! <br><b>ADD TASK FIRST</b>
+        </p>
+    </div>
+  </section>
+
+  <!-- Completed Tasks -->
+
+<section class="fade-up delay-4">
+      <h2 class="text-base font-bold text-slate-700 mb-4 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-blue-400 inline-block"></span>
+        Completed Tasks
+      </h2>
+      <div id="completed-list" class="space-y-3">
+        <p class="text-sm text-slate-400 text-center py-6" id="no-completed-msg">No completed tasks yet. <br> Keep Trying! <b>You are Inevitable!</b></p>
+      </div>
+    </section>
+    </main>
+
+<!-- FOOTER -->
+ <footer class="mt-12 border-t border-gray-100 bg-white">
+    <div class="max-w-5xl mx-auto px-6 py-5 flex items-center justify-center gap-1.5 text-sm font-semibold text-slate-700">
+        <span>© 2023 Task Manager. All rights reserved.</span> <br>
+        <span>Built by Raihan Ovi</span>
+        <a href="https://github.com/raihanovi" target="_blank" class="flex items-center hover:opacity-70 transition-opacity duration-200">
+            <img src="images/git.png" alt="GitHub" class="w-6 h-6 object-contain">
+        </a>
+    </div>
+ </footer>
+
+</body>
+</html>
